@@ -1,7 +1,7 @@
 {
   "location": {
-    "front": 0,
-    "left": 0
+    "front": -7.9,
+    "left": -7.9
   },
   "absoluteEncoderOffset": 0,
   "drive": {
@@ -15,7 +15,7 @@
     "canbus": null
   },
   "encoder": {
-    "type": "none",
+    "type": "cancoder",
     "id": 0,
     "canbus": null
   },
