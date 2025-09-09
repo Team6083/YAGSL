@@ -72,6 +72,10 @@ public class Robot extends TimedRobot {
     } else if (mainController.getRightTriggerAxis() > 0.1) {
       SwerveDriveTest.runDriveMotorsCharacterizationOnSimModules(
           swerveDrive, mainController.getRightTriggerAxis() * 12, true);
+    } else if (mainController.getRightBumperButton()) {
+      swerveDriveControl();
+    } else {
+      swerveDrive.stopModules();
     }
 
     if (mainController.getBackButton()) {
