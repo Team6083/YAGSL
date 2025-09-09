@@ -28,7 +28,8 @@ public class Robot extends TimedRobot {
    */
   XboxController mainController = new XboxController(0);
 
-  File directory = new File("\\java\\frc\\robot\\YAGSLConfig\\swerve\\swervedrive.json");
+  File directory = new File(
+      "src/main/java/frc/robot/YAGSLConfig/swerve/swervedrive.json");
   SwerveParser swerveParser;
   SwerveDrive swerveDrive;
   SwerveController swerveController;
