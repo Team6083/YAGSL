@@ -79,6 +79,13 @@ public class Robot extends TimedRobot {
     }
   }
 
+  private void swerveDriveControl() {
+    swerveDrive.driveFieldOriented(
+        swerveController.getTargetSpeeds(
+            mainController.getLeftY(), mainController.getLeftX(),
+            mainController.getRightX() * 180, swerveDrive.getGyroRotation3d().getAngle(), 4.0));
+  }
+
   @Override
   public void disabledInit() {
   }
