@@ -28,22 +28,24 @@ public class Robot extends TimedRobot {
    */
   XboxController mainController = new XboxController(0);
 
-  File directory = new File(
-      "src/main/java/frc/robot/YAGSLConfig/swerve/swervedrive.json");
+  File directory;
   SwerveParser swerveParser;
   SwerveDrive swerveDrive;
   SwerveController swerveController;
 
   public Robot() {
+    String workingDirectory = System.getProperty("user.dir");
+    directory = new File(workingDirectory + "/src/main/java/frc/robot/YAGSLConfig/swerve/swervedrive.json");
     try {
       swerveParser = new SwerveParser(directory);
+      swerveDrive = swerveParser.createSwerveDrive(4);
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
+      swerveParser = null;
     }
 
-    swerveDrive = swerveParser.createSwerveDrive(4);
-    swerveController = swerveDrive.swerveController;
+    System.out.println("Current working directory: " + workingDirectory);
   }
 
   @Override
@@ -74,8 +76,6 @@ public class Robot extends TimedRobot {
           swerveDrive, mainController.getRightTriggerAxis() * 12, true);
     } else if (mainController.getRightBumperButton()) {
       swerveDriveControl();
-    } else {
-      swerveDrive.stopModules();
     }
 
     if (mainController.getBackButton()) {
