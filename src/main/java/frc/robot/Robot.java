@@ -6,6 +6,7 @@ package frc.robot;
 
 import java.io.File;
 import java.io.IOException;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import swervelib.SwerveController;
@@ -34,8 +35,7 @@ public class Robot extends TimedRobot {
   SwerveController swerveController;
 
   public Robot() {
-    String workingDirectory = System.getProperty("user.dir");
-    directory = new File(workingDirectory + "/src/main/java/frc/robot/YAGSLConfig/swerve/swervedrive.json");
+    directory = new File(Filesystem.getDeployDirectory(), "swerve");
     try {
       swerveParser = new SwerveParser(directory);
       swerveDrive = swerveParser.createSwerveDrive(4);
@@ -44,8 +44,6 @@ public class Robot extends TimedRobot {
       e.printStackTrace();
       swerveParser = null;
     }
-
-    System.out.println("Current working directory: " + workingDirectory);
   }
 
   @Override
