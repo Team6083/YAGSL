@@ -91,9 +91,17 @@ public class Robot extends TimedRobot {
 
     if (mainController.getAButton()) {
       SwerveDriveTest.centerModules(swerveDrive);
+
     } else if (mainController.getLeftTriggerAxis() > 0.1) {
       SwerveDriveTest.powerDriveMotorsVoltage(
           swerveDrive, mainController.getLeftTriggerAxis() * 5);
+
+    } else if (mainController.getRightBumperButton()) {
+      swerveDrive.drive(new ChassisSpeeds(2, 0, 0));
+
+    } else if (mainController.getLeftBumperButton()) {
+      swerveDrive.drive(new ChassisSpeeds(0, 2, 0));
+
     } else {
       ChassisSpeeds fieldRelativeSpeeds = swerveController.getTargetSpeeds(
           mainController.getLeftY(), mainController.getLeftX(),
