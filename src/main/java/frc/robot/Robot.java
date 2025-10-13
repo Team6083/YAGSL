@@ -6,9 +6,15 @@ package frc.robot;
 
 import java.io.File;
 import java.io.IOException;
+
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
@@ -34,16 +40,27 @@ public class Robot extends TimedRobot {
   SwerveDrive swerveDrive;
   SwerveController swerveController;
 
+  StructArrayPublisher<SwerveModuleState> currentStatePublisher;
+  StructArrayPublisher<SwerveModuleState> desiredStatePublisher;
+
   public Robot() {
     directory = new File(Filesystem.getDeployDirectory(), "swerve");
     try {
       swerveParser = new SwerveParser(directory);
-      swerveDrive = swerveParser.createSwerveDrive(4);
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
-      swerveParser = null;
     }
+    swerveDrive = swerveParser.createSwerveDrive(4);
+
+    swerveController = swerveDrive.swerveController;
+
+    currentStatePublisher = NetworkTableInstance.getDefault()
+        .getStructArrayTopic("SwerveCurrentStates", SwerveModuleState.struct).publish();
+    desiredStatePublisher = NetworkTableInstance.getDefault()
+        .getStructArrayTopic("SwerveDesiredStates", SwerveModuleState.struct).publish();
+
+    putDashboard();
   }
 
   @Override
@@ -62,30 +79,38 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
   }
 
+  public void putDashboard() {
+    SmartDashboard.putNumber("gyro", swerveDrive.getGyroRotation3d().getAngle());
+  }
+
+  ChassisSpeeds robotRelativeSpeeds;
   @Override
   public void teleopPeriodic() {
+    putDashboard();
+
     if (mainController.getAButton()) {
       SwerveDriveTest.centerModules(swerveDrive);
     } else if (mainController.getLeftTriggerAxis() > 0.1) {
-      SwerveDriveTest.runAngleMotorsCharacterizationOnSimModules(
-          swerveDrive, mainController.getLeftTriggerAxis() * 12);
-    } else if (mainController.getRightTriggerAxis() > 0.1) {
-      SwerveDriveTest.runDriveMotorsCharacterizationOnSimModules(
-          swerveDrive, mainController.getRightTriggerAxis() * 12, true);
-    } else if (mainController.getRightBumperButton()) {
-      swerveDriveControl();
+      SwerveDriveTest.powerDriveMotorsVoltage(
+          swerveDrive, mainController.getLeftTriggerAxis() * 5);
+    } else {
+      ChassisSpeeds fieldRelativeSpeeds = swerveController.getTargetSpeeds(
+          mainController.getLeftY(), mainController.getLeftX(),
+          mainController.getRightX() * 180, swerveDrive.getGyroRotation3d().getAngle(), 4.0);
+
+      robotRelativeSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+          fieldRelativeSpeeds, swerveDrive.getGyroRotation3d().toRotation2d());
+
+      swerveDrive.driveFieldOriented(fieldRelativeSpeeds);
+
     }
 
     if (mainController.getBackButton()) {
       swerveDrive.zeroGyro();
     }
-  }
 
-  private void swerveDriveControl() {
-    swerveDrive.driveFieldOriented(
-        swerveController.getTargetSpeeds(
-            mainController.getLeftY(), mainController.getLeftX(),
-            mainController.getRightX() * 180, swerveDrive.getGyroRotation3d().getAngle(), 4.0));
+    currentStatePublisher.set(swerveDrive.getStates());
+    desiredStatePublisher.set(swerveDrive.toServeModuleStates(robotRelativeSpeeds, true));
   }
 
   @Override
