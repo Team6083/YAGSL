@@ -60,6 +60,8 @@ public class Robot extends TimedRobot {
     desiredStatePublisher = NetworkTableInstance.getDefault()
         .getStructArrayTopic("SwerveDesiredStates", SwerveModuleState.struct).publish();
 
+    
+    swerveDrive.setMotorIdleMode(true);
     putDashboard();
   }
 
