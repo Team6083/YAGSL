@@ -66,6 +66,11 @@ public class Robot extends TimedRobot {
   }
 
   @Override
+  public void robotInit() {
+    swerveDrive.zeroGyro();
+  }
+
+  @Override
   public void robotPeriodic() {
   }
 
