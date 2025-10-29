@@ -118,7 +118,6 @@ public class Robot extends TimedRobot {
           fieldRelativeSpeeds, swerveDrive.getGyroRotation3d().toRotation2d());
 
       swerveDrive.driveFieldOriented(fieldRelativeSpeeds);
-
     }
 
     if (mainController.getBackButton()) {
