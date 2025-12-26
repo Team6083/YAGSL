@@ -48,7 +48,7 @@ public class Robot extends TimedRobot {
     try {
       swerveParser = new SwerveParser(directory);
     } catch (IOException e) {
-      // TODO: Auto-generated catch block
+      // TODO: Auto-gene rated catch block
       e.printStackTrace();
     }
     swerveDrive = swerveParser.createSwerveDrive(4);
@@ -111,7 +111,7 @@ public class Robot extends TimedRobot {
 
     } else {
       ChassisSpeeds fieldRelativeSpeeds = swerveController.getTargetSpeeds(
-          mainController.getLeftY(), mainController.getLeftX(),
+          -mainController.getLeftY(), -mainController.getLeftX(),
           mainController.getRightX() * 180, swerveDrive.getGyroRotation3d().getAngle(), 4.0);
 
       robotRelativeSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
